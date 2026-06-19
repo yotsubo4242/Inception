@@ -1,37 +1,84 @@
-version: "3.8"
-
 services:
-  nginx:
-    build: 
-      context: requirements/nginx
+
+  mariadb:
+    build:
+      context: requirements/mariadb
       dockerfile: Dockerfile
-    container_name: nginx
-    ports:
-      - "4242:4242"
-    volumes:
-      - ./web/:/var/www/html
+    container_name: mariadb
+    restart: unless-stopped
     networks:
-      - network
+      - inception
+    volumes:
+      - db_data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+    secrets:
+      - db_root_password
+      - db_password
+
   wordpress:
     build:
       context: requirements/wordpress
       dockerfile: Dockerfile
     container_name: wordpress
+    restart: unless-stopped
+    depends_on:
+      - mariadb
     networks:
-      - network
+      - inception
     volumes:
-      # - ./web/:/var/www/html
-      - wordpress_data:/var/www/html
+      - wp_data:/var/www/html
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      DOMAIN_NAME: ${DOMAIN_NAME}
+      WP_TITLE: ${WP_TITLE}
+      WP_ADMIN_USER: ${WP_ADMIN_USER}
+      WP_ADMIN_EMAIL: ${WP_ADMIN_EMAIL}
+      WP_USER: ${WP_USER}
+      WP_USER_EMAIL: ${WP_USER_EMAIL}
+    secrets:
+      - db_password
+      - credentials
+
+  nginx:
+    build:
+      context: requirements/nginx
+      dockerfile: Dockerfile
+    container_name: nginx
+    restart: unless-stopped
+    depends_on:
+      - wordpress
+    ports:
+      - "8443:443"
+    networks:
+      - inception
+    volumes:
+      - wp_data:/var/www/html
+
+secrets:
+  db_root_password:
+    file: ../secrets/db_root_password.txt
+  db_password:
+    file: ../secrets/db_password.txt
+  credentials:
+    file: ../secrets/credentials.txt
 
 networks:
-  network:
+  inception:
     driver: bridge
 
 volumes:
-  wordpress_data:
-    name: wordpress
+  db_data:
     driver: local
     driver_opts:
-      type: volume
-      device: ${DATA_DIR}
+      type: none
+      device: /home/yuotsubo/data/mariadb
+      o: bind
+  wp_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/yuotsubo/data/wordpress
       o: bind

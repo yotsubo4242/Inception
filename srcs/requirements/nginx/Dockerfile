@@ -1,9 +1,14 @@
-FROM debian:latest
+FROM debian:bullseye
 
-RUN apt-get update && apt-get install -y nginx
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    nginx \
+    openssl \
+    && rm -rf /var/lib/apt/lists/*
 
-EXPOSE 4242
+COPY conf/default.conf /etc/nginx/conf.d/default.conf
+COPY tools/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
-COPY conf.d/ /etc/nginx/conf.d/
+EXPOSE 443
 
-CMD ["nginx", "-g", "daemon off;"]
+ENTRYPOINT ["entrypoint.sh"]
