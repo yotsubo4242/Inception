@@ -38,4 +38,4 @@ if [ ! -f wp-config.php ]; then
         --user_pass="${WP_USER_PASSWORD}"
 fi
 
-exec php-fpm7.4 -F
+exec php-fpm8.2 -F
