@@ -16,9 +16,12 @@
 |---|---|---|
 | `srcs/.env` | Non-sensitive environment variables (domain, usernames) | No (`.gitignore`) |
 | `srcs/.env.example` | Template for `.env` | Yes |
-| `secrets/db_root_password.txt` | MariaDB root password | No |
-| `secrets/db_password.txt` | MariaDB user password | No |
-| `secrets/credentials.txt` | WordPress admin and user passwords (one per line) | No |
+| `secrets/db_root_password.txt` | MariaDB root password | No (`.gitignore`) |
+| `secrets/db_root_password.txt.example` | Template for above | Yes |
+| `secrets/db_password.txt` | MariaDB user password | No (`.gitignore`) |
+| `secrets/db_password.txt.example` | Template for above | Yes |
+| `secrets/credentials.txt` | WordPress admin and user passwords (one per line) | No (`.gitignore`) |
+| `secrets/credentials.txt.example` | Template for above | Yes |
 
 ### Initial Setup
 
@@ -28,13 +31,15 @@
 cp srcs/.env.example srcs/.env
 ```
 
-2. Create secrets files:
+2. Create secrets files from examples:
 
 ```bash
-echo "rootpass" > secrets/db_root_password.txt
-echo "dbpass" > secrets/db_password.txt
-printf "adminpass\nuserpass" > secrets/credentials.txt
+cp secrets/db_root_password.txt.example secrets/db_root_password.txt
+cp secrets/db_password.txt.example secrets/db_password.txt
+cp secrets/credentials.txt.example secrets/credentials.txt
 ```
+
+Edit each file to set your own passwords.
 
 3. Add the domain to `/etc/hosts`:
 
@@ -150,11 +155,10 @@ Inception/
 ├── USER_DOC.md
 ├── DEV_DOC.md
 ├── secrets/
-│   ├── db_root_password.txt
-│   ├── db_password.txt
-│   └── credentials.txt
+│   ├── db_root_password.txt.example
+│   ├── db_password.txt.example
+│   └── credentials.txt.example
 └── srcs/
-    ├── .env
     ├── .env.example
     ├── docker-compose.yml
     └── requirements/

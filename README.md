@@ -28,8 +28,8 @@ The project sources are organized as follows:
 | `srcs/requirements/wordpress/` | WordPress + php-fpm Dockerfile, pool config, entrypoint |
 | `srcs/requirements/mariadb/` | MariaDB Dockerfile, server config, entrypoint |
 | `srcs/docker-compose.yml` | Service orchestration |
-| `srcs/.env` | Environment variables |
-| `secrets/` | Docker secrets (passwords, credentials) |
+| `srcs/.env.example` | Environment variables template (copy to `.env`) |
+| `secrets/*.example` | Docker secrets templates (copy and edit) |
 
 ### Design Choices
 
@@ -101,27 +101,33 @@ git clone <repository-url>
 cd Inception
 ```
 
-2. Create the secrets files in the `secrets/` directory:
+2. Copy the environment template and edit as needed:
 
 ```bash
-echo "your_db_root_password" > secrets/db_root_password.txt
-echo "your_db_user_password" > secrets/db_password.txt
-printf "your_wp_admin_password\nyour_wp_user_password" > secrets/credentials.txt
+cp srcs/.env.example srcs/.env
 ```
 
-3. Add the domain name to `/etc/hosts`:
+3. Create secrets files from examples and set your own passwords:
+
+```bash
+cp secrets/db_root_password.txt.example secrets/db_root_password.txt
+cp secrets/db_password.txt.example secrets/db_password.txt
+cp secrets/credentials.txt.example secrets/credentials.txt
+```
+
+4. Add the domain name to `/etc/hosts`:
 
 ```bash
 sudo sh -c 'echo "127.0.0.1 yuotsubo.42.fr" >> /etc/hosts'
 ```
 
-4. Build and start:
+5. Build and start:
 
 ```bash
 make
 ```
 
-5. Access the site at `https://yuotsubo.42.fr`.
+6. Access the site at `https://yuotsubo.42.fr`.
 
 ### Makefile Targets
 
